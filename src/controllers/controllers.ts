@@ -1,9 +1,10 @@
-import {RequestHandler, ErrorRequestHandler,} from "express"
+import {RequestHandler, ErrorRequestHandler, Request, Response} from "express"
 import { deleteStudent, 
     updateStudent, 
     getAllStudent, 
     getStudentById, 
     createStudent } from "../services/student"
+
 
 export const dateLogger: RequestHandler = (req,res,next) => {
     console.log(req.method, req.url)
@@ -91,5 +92,11 @@ export const errorHandler: ErrorRequestHandler = (err,req,res,next) => {
     res.status(500).json({
         message: 'Something went wrong!!',
         error: err instanceof Error ? err.message : String(err)
+    })
+}
+
+export const routeNotFound = (req: Request ,res:Response) => {
+    res.status(404).json({
+        message: "Route not found"
     })
 }

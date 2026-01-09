@@ -9,7 +9,8 @@ import { deleteStudentController,
     getStudents, 
     dateLogger, 
     requestGetById,
-    errorHandler } from './controllers/controllers';
+    errorHandler, 
+    routeNotFound} from './controllers/controllers';
 
 dotenv.config()
 const PORT = Number(getEnvVar('PORT', "4561"))
@@ -41,13 +42,8 @@ app.patch('/updateStudent/:studentId', updateStudentController)
 
 app.delete('/deleteStudent/:studentId', deleteStudentController)
 
-app.use("/", (req: Request,res: Response) => {
-    res.status(404).json({
-        message: "Route not found!"
-    })
-})
+app.use("/",routeNotFound)
 
-app.use(errorHandler)
 // app.use((err: unknown,req: Request,res: Response,next: NextFunction) => {
 //     res.status(500).json({
 //         message: 'Something went wrong',
