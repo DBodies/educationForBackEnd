@@ -1,12 +1,5 @@
 import { Schema, model } from "mongoose";
-
-type StudentsType = {
-  name: string,
-  age: number,
-  gender: 'male' | 'female' | 'other',
-  avgMark: number,
-  onDuty: boolean
-}
+import { StudentsType } from "../../types/studentType";
 
 const studentsSchema = new Schema<StudentsType>(
   {
