@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src/**/*.js",
     "start": "node ./src/index.js",
-    "dev": "nodemon --watch src --ext ts --exec tsx src/server.ts",
+    "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -27,7 +27,10 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.1.2",
     "pino-http": "^11.0.0"
   }
 }
