@@ -1,7 +1,7 @@
 export type CreateStudentDto = {
   name: string;
   age: number;
-  gender: string;
+  gender: 'male' | 'female' | 'other';
   avgMark: number;
   onDuty: boolean;
 } 

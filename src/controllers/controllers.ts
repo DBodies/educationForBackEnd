@@ -1,9 +1,11 @@
-import {RequestHandler, ErrorRequestHandler, Request, Response} from "express"
+import {RequestHandler} from "express"
 import { deleteStudent, 
     updateStudent, 
     getAllStudent, 
     getStudentById, 
-    createStudent } from "../services/student"
+    createStudent, 
+    updateByPutMethod} from "../services/student"
+    import createHttpError from "http-errors"
 
 
 export const dateLogger: RequestHandler = (req,res,next) => {
@@ -11,49 +13,34 @@ export const dateLogger: RequestHandler = (req,res,next) => {
     next()
 }
 
-export const getStudents: RequestHandler = async ( req,res,next) => {
-try {
+export const getStudents: RequestHandler = async ( req,res) => {
     const student = await getAllStudent()
     res.status(200).json({
         data: student
     })
-} catch ( error) {
-    next(error)
-}
 }
 
-export const requestGetById: RequestHandler = async (req,res,next) => {
-    try {
+export const requestGetById: RequestHandler = async (req,res) => {
         const {studentId} = req.params
         const student = await getStudentById(studentId)
-
         if(!student) {
-            return res.status(404).json({
-                message: "Student is not found"
-            })
+            throw createHttpError(404, 'Student not found')
         }
         res.status(200).json({
+            message: `Successfully found student with id: ${studentId}`,
             data:student
         })
-    } catch (error) {
-        next(error)
-    }
 }
 
-export const postStudent: RequestHandler = async (req,res,next) => {
-    try {
-        const {name, age, gender, avgMark, onDuty} = req.body
-        const student = await createStudent({name, age, gender, avgMark, onDuty})
+export const postStudent: RequestHandler = async (req,res) => {
+        const student = await createStudent(req.body)
         res.status(201).json({
+            message: `Successfully created a student!`,
             data: student
         }) 
-} catch ( error) {
-    next(error)
-}
 }
 
-export const updateStudentController: RequestHandler = async (req,res,next) => {
-try {
+export const updateStudentController: RequestHandler = async (req,res) => {
     const {studentId} = req.params
     const student = await updateStudent(studentId, req.body)
     if(!student) {
@@ -65,38 +52,34 @@ try {
         message: "Student was updated",
         data: student
     })
-} catch (error) {
-    next(error)
-}
 }
 
 export const deleteStudentController: RequestHandler =  async (req,res,next) => {
-try {
     const {studentId} = req.params
     const student = await deleteStudent(studentId)
     if(!student) {
-        return res.status(200).json({
-            message: 'Student doesn`t  found'
-        })
+        next(createHttpError(404, 'Student not found'))
+        return
     }
-    res.status(200).json({
+    res.status(204).json({
         message: "Student was successfully deleted",
         data: student
     })
-} catch (error) {
-    next(error)
-}
 }
 
-export const errorHandler: ErrorRequestHandler = (err,req,res,next) => {
-    res.status(500).json({
-        message: 'Something went wrong!!',
-        error: err instanceof Error ? err.message : String(err)
-    })
+export const upsertStudentController: RequestHandler = async (req,res,next) => {
+const {studentId} = req.params
+const result = await updateByPutMethod(studentId, req.body, {
+    upsert: true
+})
+if(!result) {
+    next(createHttpError(404, 'Student not found'))
+    return
 }
-
-export const routeNotFound = (req: Request ,res:Response) => {
-    res.status(404).json({
-        message: "Route not found"
-    })
+const status = result.isNew ? 201 : 200
+res.status(status).json({
+    status,
+    message: `Successfully upserted a student!`,
+    data:result.student
+})
 }

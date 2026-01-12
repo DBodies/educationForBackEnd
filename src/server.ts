@@ -1,16 +1,12 @@
-import express, {Response, Request} from 'express';
+import express from 'express';
 import pino from 'pino-http'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import { getEnvVar } from './utils/getEnvVar';
-import { deleteStudentController,
-    updateStudentController, 
-    postStudent, 
-    getStudents, 
-    dateLogger, 
-    requestGetById,
-    errorHandler, 
-    routeNotFound} from './controllers/controllers';
+import StudentRouter from './routers/student.ts'
+import { dateLogger } from './controllers/controllers';
+import { errorHandler } from './middlewares/errorHandler.ts';
+import { routeNotFound } from './middlewares/notFoundHandler.ts';
 
 dotenv.config()
 const PORT = Number(getEnvVar('PORT', "4561"))
@@ -26,28 +22,15 @@ app.use(
     },
   }),
 );
-app.listen(PORT, () => {
-    console.log(`server is running on port: ${PORT}`)
-})
-
-app.get("/students", getStudents)
 
 app.use(dateLogger)
 
-app.get("/students/:studentId", requestGetById)
-
-app.post('/createStudent', postStudent)
-
-app.patch('/updateStudent/:studentId', updateStudentController)
-
-app.delete('/deleteStudent/:studentId', deleteStudentController)
+app.use(StudentRouter)
 
 app.use("/",routeNotFound)
+app.use(errorHandler)
 
-// app.use((err: unknown,req: Request,res: Response,next: NextFunction) => {
-//     res.status(500).json({
-//         message: 'Something went wrong',
-//         error: err instanceof Error ? err.message : String(err)
-//     })
-// })
+app.listen(PORT, () => {
+    console.log(`server is running on port: ${PORT}`)
+})
 }
