@@ -1,10 +1,24 @@
 import { StudentsCollection} from "../db/models/student";
+import { PaginationOptions } from "../types/parsedType";
 import { CreateStudentDto, updateStudentDto } from "../types/studentType";
 import { Types } from "mongoose";
+import { calculatePaginationData } from "../utils/calculatePaginationsData";
 
-export const getAllStudent = async () => {
-    const student = await StudentsCollection.find()
-    return student
+export const getAllStudent = async ({page, perPage}: PaginationOptions) => {
+    const limit = perPage
+    const skip = (page - 1) * perPage
+
+    const studentsQuery = StudentsCollection.find()
+    const studentsCount = await StudentsCollection.find()
+    .merge(studentsQuery)
+    .countDocuments()
+
+    const student = await studentsQuery.skip(skip).limit(limit).exec()
+    const paginationData = calculatePaginationData(studentsCount, perPage, page)
+    return {
+        data: student,
+        ...paginationData
+    }
 }
 
 export const getStudentById = async (studentId: string | Types.ObjectId) => {

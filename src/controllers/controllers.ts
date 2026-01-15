@@ -6,6 +6,7 @@ import { deleteStudent,
     createStudent, 
     updateByPutMethod} from "../services/student"
     import createHttpError from "http-errors"
+import { parsePagination } from "../utils/parsePagination"
 
 
 export const dateLogger: RequestHandler = (req,res,next) => {
@@ -14,8 +15,13 @@ export const dateLogger: RequestHandler = (req,res,next) => {
 }
 
 export const getStudents: RequestHandler = async ( req,res) => {
-    const student = await getAllStudent()
+    const {page, perPage} = parsePagination(req.query)
+    const student = await getAllStudent({
+        page, 
+        perPage
+    })
     res.status(200).json({
+        message: 'Successfully found students!',
         data: student
     })
 }

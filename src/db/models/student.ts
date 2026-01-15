@@ -14,7 +14,7 @@ const studentsSchema = new Schema<StudentsType>(
     gender: {
       type: String,
       required: true,
-      enum: ['male', 'female', 'other'],
+      enum: ['male', 'female'],
     },
     avgMark: {
       type: Number,

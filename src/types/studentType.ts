@@ -1,7 +1,7 @@
 export type CreateStudentDto = {
   name: string;
   age: number;
-  gender: 'male' | 'female' | 'other';
+  gender: 'male' | 'female';
   avgMark: number;
   onDuty: boolean;
 } 
@@ -10,7 +10,7 @@ export type updateStudentDto = Partial<Omit<CreateStudentDto, "_id">>
 export type StudentsType = {
   name: string,
   age: number,
-  gender: 'male' | 'female' | 'other',
+  gender: 'male' | 'female',
   avgMark: number,
   onDuty: boolean
 }
